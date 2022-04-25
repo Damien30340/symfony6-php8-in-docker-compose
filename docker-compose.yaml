@@ -1,0 +1,54 @@
+version: '3.7'
+services:
+    php8-api:
+        container_name: php8-api
+        build: php8-sf6
+        ports:
+            - "9000:8000"
+        volumes:
+            - ./project:/var/www/html
+    php8-front:
+        container_name: php8-front
+        build: php8-sf6
+        ports:
+            - "10000:8000"
+        volumes:
+            - ./project:/var/www/html
+    mailer:
+        image: schickling/mailcatcher
+        ports: [1025, 1080]
+#    database:
+#        image: postgres:13-alpine
+#        environment:
+#            POSTGRES_DB: app
+#            POSTGRES_PASSWORD: ChangeMe
+#            POSTGRES_USER: symfony
+#        volumes:
+#            - db-data:/var/lib/postgresql/data:rw
+#        ports:
+#            - "5432"
+    db:
+        image: mysql:5.7
+        container_name: db
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: app
+            MYSQL_USER: user
+            MYSQL_PASSWORD: pass
+        ports:
+            - "6033:3306"
+        volumes:
+            - dbdata:/var/lib/mysql
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: pma
+        links:
+            - db
+        environment:
+            PMA_HOST: db
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+        ports:
+            - 8081:80
+volumes:
+    dbdata:
